@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COSPOWER — Production Control Center</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#e8dfd2;--panel:#f7f1e8;--panel2:#efe6da;--line:#cbbca9;--text:#332b24;--muted:#6f6256;--blue:#3474f5;--cyan:#19c7c0;--green:#27c58a;--amber:#eda52a;--purple:#9b7cff;--red:#ed5b68}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f3e8da 0%,#e8d9c7 55%,#ddcbb7 100%);color:var(--text);font:13px "Segoe UI",Arial,sans-serif}.app{min-height:100vh;display:flex}.side{width:238px;position:fixed;left:0;top:0;bottom:0;background:linear-gradient(180deg,#cbb79e 0%,#bda68b 100%);border-right:1px solid #a89276;padding:24px 12px;display:flex;flex-direction:column}.logo{padding:0 12px 25px;border-bottom:1px solid #1b2736}.logo b{display:block;color:#3171f6;font-size:24px;letter-spacing:.25em}.logo span{color:#789eff;font-size:9px;letter-spacing:.3em}.nav{margin-top:20px;display:grid;gap:6px}.nav button{border:0;background:none;color:#4f4439;text-align:left;border-radius:7px;padding:12px 13px;cursor:pointer}.nav button.active{background:#a68c70;color:#ffffff;box-shadow:inset 3px 0 #72583f}.source{margin-top:auto;border:1px solid #21414b;background:#0a1a20;border-radius:7px;padding:11px;color:#718896;font-size:10px}.source strong{display:block;color:#27c58a;margin-top:4px}.main{margin-left:238px;width:calc(100% - 238px)}.top{height:68px;position:sticky;top:0;z-index:5;background:#080e15e8;border-bottom:1px solid #1b2737;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 28px}.crumb{color:#71849b}.crumb b{color:#e5edf7}.topright{display:flex;align-items:center;gap:12px}.sync{font-size:11px;color:#7589a0}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#27c58a;margin-right:6px}.refresh{border:1px solid #2a3d55;background:#0e1925;color:#dce7f5;border-radius:6px;padding:8px 12px;cursor:pointer}.content{padding:28px;max-width:1500px;margin:auto}.hero{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}.hero h1{font-size:27px;margin:0 0 7px}.hero p{margin:0;color:var(--muted)}.sourcebar{padding:9px 12px;border:1px solid #1e3043;background:#0b141f;border-radius:7px;color:#71859b;font-size:11px;margin-bottom:18px}.sourcebar strong{color:#aabacd}.section{display:none}.section.active{display:block}.title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px}.title h2{font-size:14px;margin:0}.title span{font-size:10px;color:#687c94}.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.kpi{background:linear-gradient(145deg,#fffdf8,#f5ecdf);border:1px solid #cdb99f;border-radius:8px;padding:15px;position:relative;overflow:hidden}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#62564b}.value{font-size:25px;font-weight:700;margin-top:8px;color:#332b24}.sub{font-size:10.5px;color:#75685b;margin-top:5px}.bfgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.bf{border:1px solid #25374c;background:#0d1722;border-radius:8px;padding:15px;display:flex;justify-content:space-between;align-items:center}.bf .t{color:#8ea2b9;font-size:12px}.bf .n{font-size:22px;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.card{background:linear-gradient(145deg,#101923,#0d151f);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 12px 32px #0004}.head{padding:14px 16px;border-bottom:1px solid #1d2a3a;display:flex;justify-content:space-between}.head h3{margin:0;font-size:13px}.head p{margin:4px 0 0;color:#687d95;font-size:10.5px}.body{padding:12px 14px}.chart{height:270px;position:relative}.chart.tall{height:320px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#111b26;color:#7890aa;font-size:9px;text-transform:uppercase;text-align:left;padding:9px;position:sticky;top:0}td{padding:8px;border-top:1px solid #192637;color:#c9d5e2}.table{max-height:410px;overflow:auto}.remarks{display:grid;gap:8px}.remark{border:1px solid #26364a;background:#0f1924;border-radius:7px;padding:10px}.remark .d{color:#71859b;font-size:10px}.remark .r{margin-top:4px}.footer{text-align:center;color:#50657d;font-size:10px;margin-top:25px}@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.side{position:static;width:100%;height:auto}.main{margin:0;width:100%}.app{display:block}.nav{display:flex;overflow:auto}.source{display:none}.kpis,.bfgrid,.grid{grid-template-columns:1fr 1fr}.top{position:static}}@media(max-width:550px){.kpis,.bfgrid,.grid{grid-template-columns:1fr}.content{padding:16px}}
+
+/* FINAL COSPOWER LIGHT-BROWN THEME */
+:root{
+  --bg:#eadcc9;
+  --panel:#fffaf3;
+  --panel2:#f5ecdf;
+  --line:#cdbda8;
+  --text:#332b24;
+  --muted:#6f6256;
+}
+body{
+  margin:0 !important;
+  background:linear-gradient(135deg,#f3e8da 0%,#e8d9c7 55%,#ddcbb7 100%) !important;
+  color:#332b24 !important;
+}
+.main{
+  background:transparent !important;
+}
+.side{
+  background:linear-gradient(180deg,#cbb79e 0%,#bda68b 100%) !important;
+  border-right:1px solid #a89276 !important;
+}
+.logo{
+  border-bottom:1px solid rgba(91,70,49,.25) !important;
+}
+.nav button{
+  background:transparent !important;
+  color:#4b4035 !important;
+}
+.nav button:hover{
+  background:rgba(255,255,255,.20) !important;
+}
+.nav button.active{
+  background:#a68c70 !important;
+  color:#fff !important;
+  box-shadow:inset 4px 0 #72583f !important;
+}
+.source{
+  background:#eee2d2 !important;
+  border:1px solid #b9a58d !important;
+  color:#655747 !important;
+}
+.source strong{
+  color:#387b61 !important;
+}
+.top{
+  background:rgba(238,226,210,.96) !important;
+  border-bottom:1px solid #cbb99f !important;
+  backdrop-filter:blur(10px);
+}
+.crumb{
+  color:#756656 !important;
+}
+.crumb b{
+  color:#332b24 !important;
+}
+.sync{
+  color:#756656 !important;
+}
+.refresh{
+  background:#f8f0e5 !important;
+  border:1px solid #c6b39a !important;
+  color:#4b4035 !important;
+}
+.dot{
+  background:#27a875 !important;
+}
+.sourcebar{
+  background:#f6ede1 !important;
+  border:1px solid #cdbba4 !important;
+  color:#756656 !important;
+}
+.sourcebar strong{
+  color:#5c4d3e !important;
+}
+.hero h1,.title h2,.head h3{
+  color:#332b24 !important;
+}
+.hero p,.title span{
+  color:#756656 !important;
+}
+.kpi{
+  background:linear-gradient(145deg,#fffdf8 0%,#f5ecdf 100%) !important;
+  border:1px solid #cdb99f !important;
+  box-shadow:0 6px 18px rgba(91,68,43,.10) !important;
+}
+.eyebrow{
+  color:#5b4c3d !important;
+}
+.value{
+  color:#30271f !important;
+}
+.sub{
+  color:#766554 !important;
+}
+.bf{
+  background:#fff8ee !important;
+  border:1px solid #cdb99f !important;
+  box-shadow:0 5px 16px rgba(91,68,43,.07) !important;
+}
+.bf .t{
+  color:#6b5b4b !important;
+}
+.card{
+  background:#fffaf3 !important;
+  border:1px solid #cdbda8 !important;
+  box-shadow:0 8px 24px rgba(91,68,43,.08) !important;
+}
+.head{
+  background:#f4e9da !important;
+  border-bottom:1px solid #d5c4ae !important;
+}
+.head p{
+  color:#756656 !important;
+}
+.body{
+  background:#fffaf3 !important;
+}
+table{
+  color:#3d332a !important;
+}
+th{
+  background:#e8d8c4 !important;
+  color:#5b4c3d !important;
+}
+td{
+  border-top:1px solid #e0d2c0 !important;
+  color:#4a3e33 !important;
+}
+tr:nth-child(even) td{
+  background:#fbf5ec !important;
+}
+tr:hover td{
+  background:#f1e5d5 !important;
+}
+.remark{
+  background:#fff8ee !important;
+  border:1px solid #cdb99f !important;
+}
+.remark .d{
+  color:#756656 !important;
+}
+.footer{
+  color:#766656 !important;
+}
+</style>
+
+<style id="cospower-kpi-bf-design">
+/* ===== COSPOWER KPI / BROUGHT-FORWARD DESIGN ===== */
+.kpi{
+  position:relative !important;
+  overflow:hidden !important;
+  border:1px solid #cdb99f !important;
+  border-left:5px solid var(--accent,var(--blue)) !important;
+  border-radius:14px !important;
+  box-shadow:0 7px 20px rgba(91,68,43,.10) !important;
+  min-height:112px;
+}
+.kpi:before{
+  content:"" !important;
+  position:absolute !important;
+  width:82px !important;
+  height:82px !important;
+  right:-40px !important;
+  top:-18px !important;
+  border:13px solid var(--accent,var(--blue)) !important;
+  border-left-color:transparent !important;
+  border-bottom-color:transparent !important;
+  border-radius:50% !important;
+  opacity:.14 !important;
+  transform:rotate(25deg) !important;
+  pointer-events:none !important;
+}
+.kpi:after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  bottom:0 !important;
+  width:5px !important;
+  background:var(--accent,var(--blue)) !important;
+}
+.kpi .eyebrow{
+  position:relative !important;
+  z-index:2 !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  letter-spacing:.045em !important;
+  color:#5b4c3d !important;
+}
+.kpi .value{
+  position:relative !important;
+  z-index:2 !important;
+  font-size:28px !important;
+  font-weight:800 !important;
+  color:#30271f !important;
+}
+.kpi .sub{
+  position:relative !important;
+  z-index:2 !important;
+  color:#766554 !important;
+}
+
+/* KPI color accents */
+.kpi.kpi-blue{--accent:#3d7cff !important;}
+.kpi.kpi-green{--accent:#27a875 !important;}
+.kpi.kpi-purple{--accent:#8b6de9 !important;}
+.kpi.kpi-amber{--accent:#e0a33a !important;}
+.kpi.kpi-red{--accent:#d96a62 !important;}
+
+/* If existing cards use data/color classes, preserve their accent colors */
+.kpi[data-color="blue"]{--accent:#3d7cff !important;}
+.kpi[data-color="green"]{--accent:#27a875 !important;}
+.kpi[data-color="purple"]{--accent:#8b6de9 !important;}
+.kpi[data-color="amber"]{--accent:#e0a33a !important;}
+
+/* Brought Forward */
+.bf{
+  position:relative !important;
+  overflow:hidden !important;
+  background:linear-gradient(145deg,#fffdf8,#f5ecdf) !important;
+  border:1px solid #cdb99f !important;
+  border-left:5px solid var(--bf-accent,#3d7cff) !important;
+  border-radius:14px !important;
+  box-shadow:0 7px 20px rgba(91,68,43,.09) !important;
+}
+.bf:before{
+  content:"" !important;
+  position:absolute !important;
+  width:68px !important;
+  height:68px !important;
+  right:-34px !important;
+  top:-16px !important;
+  border:10px solid var(--bf-accent,#3d7cff) !important;
+  border-left-color:transparent !important;
+  border-bottom-color:transparent !important;
+  border-radius:50% !important;
+  opacity:.12 !important;
+  transform:rotate(25deg) !important;
+  pointer-events:none !important;
+}
+.bf .t,.bf .v,.bf .s{
+  position:relative !important;
+  z-index:2 !important;
+}
+.bf .t{
+  color:#5b4c3d !important;
+  font-weight:700 !important;
+}
+.bf .v{
+  color:#30271f !important;
+  font-size:24px !important;
+  font-weight:800 !important;
+}
+.bf .s{
+  color:#766554 !important;
+}
+
+/* Use blue as the default Brought Forward border, as requested */
+.bf{--bf-accent:#3d7cff !important;}
+.bf:nth-child(2){--bf-accent:#27a875 !important;}
+.bf:nth-child(3){--bf-accent:#8b6de9 !important;}
+.bf:nth-child(4){--bf-accent:#e0a33a !important;}
+</style>
+
+</head>
+<body>
+<div class="app">
+<aside class="side"><div class="logo"><div style="display:flex;align-items:center;gap:10px"><img src="logo.jpg" alt="COSPOWER Engineering Ltd logo" style="width:54px;height:54px;object-fit:contain;border-radius:4px;background:#fff"><div><b style="display:block;color:#ffffff;font-size:17px;letter-spacing:.08em;line-height:1.1">COSPOWER</b><span style="display:block;color:#f4eee7;font-size:9px;letter-spacing:.12em;margin-top:4px">ENGINEERING LTD.</span></div></div></div><div class="nav">
+<button class="active" data-tab="overview">◫ &nbsp; Overview</button><button data-tab="dr">◉ &nbsp; DR &amp; Reactor</button><button data-tab="cap">◈ &nbsp; Capacitors</button><button data-tab="struct">▦ &nbsp; Structure</button><button data-tab="remarks">✦ &nbsp; Remarks &amp; Issues</button>
+</div><div class="source">DATA FEED<strong>● Live Excel Connection</strong>Daily Production Report_Aug_26.xlsx</div></aside>
+<main class="main"><header class="top"><div class="crumb">Production Control Center &nbsp;›&nbsp; <b id="crumb">Overview</b></div><div class="topright"><span class="sync"><i class="dot"></i><span id="sync">Connecting…</span></span><button class="refresh" id="refresh">↻ Refresh Data</button></div></header>
+<div class="content"><div class="sourcebar"><strong>Excel source:</strong> Daily Production Report_Aug_26.xlsx &nbsp;•&nbsp; <span id="status">Loading…</span> &nbsp;•&nbsp; Automatic refresh every 30 seconds</div>
+<div class="hero"><div><h1 id="hero"><h1 class="production-overview-title">Production Overview - Aug 2026</h1><p>Dispatch readiness, production flow and material position.</p></div></div>
+
+<section id="sec-overview" class="section active"><div class="title"><h2>Dispatch Readiness</h2><span>Current position after brought-forward stock</span></div><div id="overviewKpis" class="kpis"></div><div class="title"><h2>Brought Forward / Opening Position</h2><span>Opening stock from Excel</span></div><div id="bf" class="bfgrid"></div>
+<div class="grid"><div class="card"><div class="head"><div><h3>DR blocks vs target</h3><p>Daily DR block production</p></div></div><div class="body"><div class="chart"><canvas id="ovDr"></canvas></div></div></div>
+<div class="card"><div class="head"><div><h3>Elements wound vs target</h3><p>Daily capacitor element winding</p></div></div><div class="body"><div class="chart"><canvas id="ovCap"></canvas></div></div></div></div>
+<div class="grid"><div class="card"><div class="head"><div><h3>Capacitor dispatch readiness</h3><p>Ready for dispatch and dispatched</p></div></div><div class="body"><div class="chart"><canvas id="ovCapDisp"></canvas></div></div></div>
+<div class="card"><div class="head"><div><h3>Structure dispatch readiness</h3><p>Galvanised ready and dispatched</p></div></div><div class="body"><div class="chart"><canvas id="ovStruct"></canvas></div></div></div></div></section>
+
+<section id="sec-dr" class="section"><div class="title"><h2>DR &amp; Reactor</h2><span>Net production and dispatch readiness</span></div><div id="drKpis" class="kpis"></div><div class="grid"><div class="card"><div class="head"><div><h3>Cubicle — Net Total</h3><p>Cumulative net total</p></div></div><div class="body"><div class="chart tall"><canvas id="drCub"></canvas></div></div></div><div class="card"><div class="head"><div><h3>Assembly — Net Total</h3><p>Cumulative net total</p></div></div><div class="body"><div class="chart tall"><canvas id="drAss"></canvas></div></div></div></div><div class="card"><div class="head"><div><h3>Daily DR status log</h3><p>Directly from Excel</p></div></div><div class="body table" id="drTable"></div></div></section>
+
+<section id="sec-cap" class="section"><div class="title"><h2>Capacitors</h2><span>Production and dispatch readiness</span></div><div id="capKpis" class="kpis"></div><div class="grid"><div class="card"><div class="head"><div><h3>Elements / Encasing / Welding</h3><p>Daily production stages</p></div></div><div class="body"><div class="chart tall"><canvas id="capProd"></canvas></div></div></div><div class="card"><div class="head"><div><h3>Ready for Dispatch</h3><p>Daily ready-for-dispatch output and cumulative position</p></div></div><div class="body"><div class="chart tall"><canvas id="capReady"></canvas></div></div></div></div><div class="card"><div class="head"><div><h3>Daily capacitor status log</h3></div></div><div class="body table" id="capTable"></div></div></section>
+
+<section id="sec-struct" class="section"><div class="title"><h2>Structure</h2><span>Material flow in tons</span></div><div id="structKpis" class="kpis"></div><div class="card"><div class="head"><div><h3>Structure daily flow</h3><p>Black material → galvanising → galvanised ready → dispatch</p></div></div><div class="body"><div class="chart tall"><canvas id="structChart"></canvas></div></div></div><div style="height:14px"></div><div class="card"><div class="head"><div><h3>Daily structure status log</h3></div></div><div class="body table" id="structTable"></div></div></section>
+
+<section id="sec-remarks" class="section"><div class="title"><h2>Remarks &amp; Issues</h2><span>Operational notes from Excel</span></div><div class="card"><div class="body"><div id="remarks" class="remarks"></div></div></div></section>
+<div class="footer">Source: Daily Production Report_Aug_26.xlsx • No Excel structure changed.</div>
+</div></main></div>
+<script>
+let D=window.__COSPOWER_DATA__ || {dr:[],cap:[],struct:[],targets:{},bf:{}}; charts={};
+const C={blue:"#3474f5",cyan:"#19c7c0",green:"#27c58a",amber:"#eda52a",purple:"#9b7cff",red:"#ed5b68"};
+const $=id=>document.getElementById(id);
+const n=v=>v==null||v===""?0:Number(v)||0;
+const fmt=(v,dec=0)=>Number(v||0).toLocaleString("en-IN",{minimumFractionDigits:dec,maximumFractionDigits:dec});
+function rows(a,keys){return (a||[]).filter(r=>keys.some(k=>r[k]!=null));}
+function sum(a,k){return (a||[]).reduce((s,r)=>s+n(r[k]),0)}
+function cum(a,k,start){let x=n(start);return a.map(r=>(x+=n(r[k]),+x.toFixed(3)))}
+function dates(a){return a.map(r=>r.date.slice(5))}
+function kpis(id,arr){$(id).innerHTML=arr.map(x=>`<div class="kpi" style="--c:${x.c}"><div class="eyebrow">${x.l}</div><div class="value">${x.v}</div><div class="sub">${x.s}</div></div>`).join("")}
+function destroy(){Object.values(charts).forEach(c=>c.destroy());charts={}}
+function chart(id,type,data){
+  charts[id]=new Chart($(id),{
+    type:type,
+    data:data,
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      plugins:{legend:{labels:{color:"#8ea2b9",font:{size:10},boxWidth:10}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:"#71859b",font:{size:9}}},
+        y:{beginAtZero:true,grid:{color:"rgba(120,145,170,.12)"},ticks:{color:"#71859b",font:{size:9}}}
+      }
+    }
+  });
+}
+function render(){
+ const dr=D.dr,cap=D.cap,st=D.struct,bf=D.bf;
+ const capReady=bf.capReady+sum(cap,"readyDispatch"),capDisp=sum(cap,"dispatched"),capBal=capReady-capDisp;
+ const drReady=bf.drReady+sum(dr,"readyDispatch"),drDisp=sum(dr,"dispatched"),drBal=drReady-drDisp;
+ const black=sum(st,"black"),galv=bf.structGalvReady+sum(st,"galvReady"),stDisp=sum(st,"dispatched"),stBal=galv-stDisp;
+ kpis("overviewKpis",[
+  {l:"Capacitor Ready for Dispatch",v:fmt(capReady),s:"Brought forward + current month",c:C.blue},{l:"Capacitors Dispatched",v:fmt(capDisp),s:"Client dispatch",c:C.green},{l:"Capacitor Balance",v:fmt(capBal),s:"Ready less dispatched",c:C.purple},
+  {l:"DR Ready for Dispatch",v:fmt(drReady),s:"Brought forward + current month",c:C.blue},{l:"DR Dispatched",v:fmt(drDisp),s:"Client dispatch",c:C.green},{l:"DR Balance",v:fmt(drBal),s:"Ready less dispatched",c:C.purple},
+  {l:"Black Material Ready",v:fmt(black,2)+" t",s:"Ready for galvanising",c:C.amber},{l:"Galvanised Ready for Dispatch",v:fmt(galv,2)+" t",s:"Brought forward + current month",c:C.purple},{l:"Structure Dispatched",v:fmt(stDisp,2)+" t",s:"Client dispatch",c:C.green},{l:"Structure Balance",v:fmt(stBal,2)+" t",s:"Ready less dispatched",c:C.blue}
+ ]);
+ $("bf").innerHTML=[
+  ["Galvanised material ready for dispatch",bf.structGalvReady,"tons",C.purple],["Capacitor ready for dispatch",bf.capReady,"nos",C.blue],["Damping ready for dispatch",bf.drReady,"nos",C.cyan]
+ ].map(x=>`<div class="bf"><div class="t">${x[0]}<br><small>Opening position</small></div><div class="n">${fmt(x[1],x[2]=="tons"?2:0)} ${x[2]}</div></div>`).join("");
+ kpis("drKpis",[
+  {l:"DR Block Net Total",v:fmt(bf.drBlock+sum(dr,"dr")),s:"Brought forward + daily movement",c:C.blue},{l:"Cubicle Net Total",v:fmt(bf.drCubicle+sum(dr,"cubicle")),s:"Net cumulative total",c:C.cyan},{l:"Assembly Net Total",v:fmt(bf.drAssembly+sum(dr,"assembly")),s:"Net cumulative total",c:C.amber},
+  {l:"DR Ready for Dispatch",v:fmt(drReady),s:"Current queue",c:C.purple},{l:"DR Dispatched",v:fmt(drDisp),s:"Client dispatch",c:C.green}
+ ]);
+ kpis("capKpis",[
+  {l:"Elements Wound",v:fmt(sum(cap,"elements")),s:"Month-to-date",c:C.blue},{l:"Encasing",v:fmt(sum(cap,"encasing")),s:"Month-to-date",c:C.cyan},{l:"Welding",v:fmt(sum(cap,"welding")),s:"Numeric entries only",c:C.amber},
+  {l:"Ready for Dispatch",v:fmt(capReady),s:"Brought forward + current month",c:C.purple},{l:"Dispatched",v:fmt(capDisp),s:"Client dispatch",c:C.green},{l:"Balance",v:fmt(capBal),s:"Ready less dispatched",c:C.blue}
+ ]);
+ kpis("structKpis",[
+  {l:"Black Material Ready",v:fmt(black,2)+" t",s:"Month-to-date",c:C.blue},{l:"Sent for Galvanising",v:fmt(sum(st,"toGalv"),2)+" t",s:"Month-to-date",c:C.amber},{l:"Galvanised Ready",v:fmt(galv,2)+" t",s:"Brought forward + current",c:C.purple},{l:"Dispatched",v:fmt(stDisp,2)+" t",s:"Client dispatch",c:C.green},{l:"Balance",v:fmt(stBal,2)+" t",s:"Ready less dispatched",c:C.blue}
+ ]);
+ destroy();
+ let x=rows(dr,["dr"]); chart("ovDr","bar",{labels:dates(x),datasets:[{label:"DR blocks",data:x.map(r=>r.dr),backgroundColor:C.blue},{label:"Target",data:x.map(()=>D.targets.dr),type:"line",borderColor:C.amber,borderWidth:2,pointRadius:0}]});
+ x=rows(cap,["elements"]); chart("ovCap","bar",{labels:dates(x),datasets:[{label:"Elements wound",data:x.map(r=>r.elements),backgroundColor:C.cyan},{label:"Target",data:x.map(()=>D.targets.elements),type:"line",borderColor:C.amber,borderWidth:2,pointRadius:0}]});
+ x=rows(cap,["readyDispatch","dispatched"]); chart("ovCapDisp","line",{labels:dates(x),datasets:[{label:"Ready for dispatch",data:cum(x,"readyDispatch",bf.capReady),borderColor:C.blue,tension:.25},{label:"Dispatched",data:cum(x,"dispatched",0),borderColor:C.green,tension:.25}]});
+ x=rows(st,["galvReady","dispatched"]); chart("ovStruct","line",{labels:dates(x),datasets:[{label:"Galvanised ready",data:cum(x,"galvReady",bf.structGalvReady),borderColor:C.purple,tension:.25},{label:"Dispatched",data:cum(x,"dispatched",0),borderColor:C.green,tension:.25}]});
+ x=rows(dr,["cubicle"]); chart("drCub","line",{labels:dates(x),datasets:[{label:"Cubicle net total",data:cum(x,"cubicle",bf.drCubicle),borderColor:C.blue,tension:.25}]});
+ x=rows(dr,["assembly"]); chart("drAss","line",{labels:dates(x),datasets:[{label:"Assembly net total",data:cum(x,"assembly",bf.drAssembly),borderColor:C.cyan,tension:.25}]});
+ x=rows(cap,["elements","encasing","welding"]); chart("capProd","bar",{labels:dates(x),datasets:[{label:"Elements wound",data:x.map(r=>r.elements),backgroundColor:C.blue},{label:"Encasing",data:x.map(r=>r.encasing),backgroundColor:C.cyan},{label:"Welding",data:x.map(r=>r.welding),backgroundColor:C.amber}]});
+ x=rows(cap,["readyDispatch"]); chart("capReady","bar",{labels:dates(x),datasets:[{label:"Ready for dispatch — daily",data:x.map(r=>r.readyDispatch),backgroundColor:C.blue},{label:"Ready for dispatch — cumulative",data:cum(x,"readyDispatch",bf.capReady),type:"line",borderColor:C.green,borderWidth:2,pointRadius:2}]});
+ x=rows(st,["black","toGalv","galvReady","dispatched"]); chart("structChart","bar",{labels:dates(x),datasets:[{label:"Black material",data:x.map(r=>r.black),backgroundColor:C.blue},{label:"Sent for galvanising",data:x.map(r=>r.toGalv),backgroundColor:C.amber},{label:"Galvanised ready",data:x.map(r=>r.galvReady),backgroundColor:C.purple},{label:"Dispatched",data:x.map(r=>r.dispatched),backgroundColor:C.green}]});
+ tables();remarks();
+}
+function table(id,cols,a){$(id).innerHTML="<table><thead><tr>"+cols.map(c=>`<th>${c[0]}</th>`).join("")+"</tr></thead><tbody>"+a.slice().reverse().map(r=>"<tr>"+cols.map(c=>`<td>${r[c[1]]??""}</td>`).join("")+"</tr>").join("")+"</tbody></table>"}
+function tables(){
+ table("drTable",[["Date","date"],["Project","project"],["DR block","dr"],["Cubicle","cubicle"],["Assembly","assembly"],["Ready dispatch","readyDispatch"],["Dispatched","dispatched"],["Remark","remark"]],rows(D.dr,["dr","cubicle","assembly","readyDispatch","dispatched","project","remark"]));
+ table("capTable",[["Date","date"],["Elements","elements"],["Encasing","encasing"],["Welding","welding"],["Ready dispatch","readyDispatch"],["Dispatched","dispatched"],["Balance","balance"],["Remark","remark"]],rows(D.cap,["elements","encasing","welding","readyDispatch","dispatched","balance","remark"]));
+ table("structTable",[["Date","date"],["Black material","black"],["Sent for galv.","toGalv"],["Galvanised ready","galvReady"],["Dispatched","dispatched"],["Remark","remark"]],rows(D.struct,["black","toGalv","galvReady","dispatched","remark"]));
+}
+function remarks(){let a=[];D.dr.forEach(r=>{if(r.remark)a.push([r.date,"DR",r.remark]);if(r.reactorRemark)a.push([r.date,"Reactor",r.reactorRemark])});D.cap.forEach(r=>{if(r.remark)a.push([r.date,"Capacitors",r.remark])});D.struct.forEach(r=>{if(r.remark)a.push([r.date,"Structure",r.remark])});a.sort((a,b)=>b[0].localeCompare(a[0]));$("remarks").innerHTML=a.map(x=>`<div class="remark"><div class="d">${x[0]} • ${x[1]}</div><div class="r">${x[2]}</div></div>`).join("")||"<div class='remark'>No remarks logged.</div>"}
+async function load(){try{let r=await fetch("/api/data?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(await r.text());D=await r.json();render();$("status").textContent="Connected • data read successfully";$("sync").textContent="Last sync "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}); }catch(e){console.error(e);$("status").textContent="ERROR: "+e.message;$("sync").textContent="Excel connection error"}}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("sec-"+b.dataset.tab).classList.add("active");$("crumb").textContent=b.textContent.replace(/[◫◉◈▦✦]/g,"").trim()});
+$("refresh").onclick=load;load();setInterval(load,30000);
+</script></body></html>
+<style id="cospower-final-kpi-adjustment">
+.kpi:before{
+  width:82px !important;
+  height:82px !important;
+  right:-40px !important;
+  top:-18px !important;
+  border-width:13px !important;
+}
+.bf:before{
+  width:68px !important;
+  height:68px !important;
+  right:-34px !important;
+  top:-16px !important;
+  border-width:10px !important;
+}
+</style>
+
+<style id="cospower-circle-left-fix">
+.kpi:before{
+  width:72px !important;
+  height:72px !important;
+  left:-38px !important;
+  right:auto !important;
+  top:-22px !important;
+  border-width:11px !important;
+  opacity:.12 !important;
+  transform:rotate(25deg) !important;
+}
+.bf:before{
+  width:60px !important;
+  height:60px !important;
+  left:-32px !important;
+  right:auto !important;
+  top:-18px !important;
+  border-width:9px !important;
+  opacity:.10 !important;
+  transform:rotate(25deg) !important;
+}
+
+/* Explicit heading styling */
+.hero h1.production-overview-title{
+  font-size:26px !important;
+  font-weight:800 !important;
+  color:#332b24 !important;
+}
+</style>
